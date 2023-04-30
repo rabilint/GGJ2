@@ -76,6 +76,7 @@ public class spawnRoad : MonoBehaviour
 
                 int num = Random.Range(0,4);
                 arrayOfRoads[i] = Instantiate(roadsPrefab[num], new Vector2(7.68f, 0.5f), Quaternion.identity);
+                arrayOfRoads[i].name = "road_" + i;
                 // Debug.Log(i);
             } else {
                 Vector3 newPosition = arrayOfRoads[i].transform.position;
