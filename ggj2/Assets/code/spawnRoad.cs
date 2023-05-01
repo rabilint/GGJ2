@@ -23,6 +23,9 @@ public class spawnRoad : MonoBehaviour
     public Sprite[] arrowsPrefab;
     private SpriteRenderer spr;
 
+    [SerializeField] private AudioSource f;
+    [SerializeField] private AudioSource d;
+
     public Image progresBar;
     public float progress = 0.0f;
     public int totalWay = 30;
@@ -169,6 +172,7 @@ public class spawnRoad : MonoBehaviour
             if(colors[nextRoadIndex] == color)
             {
                 Debug.Log("true" + nextRoadIndex);
+                d.Play();
                 nextRoadIndex++;
                 passedWay++;
                 FillProgressBar();
@@ -177,6 +181,7 @@ public class spawnRoad : MonoBehaviour
             else 
             {
                 currentHp--;
+                f.Play();
                 curHp.text = currentHp.ToString();
 
                 if(currentHp <= 0)
