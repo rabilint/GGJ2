@@ -5,21 +5,19 @@ using UnityEngine.UI;
 
 public class spawnRoad : MonoBehaviour
 {
+    public bool godMode = false;
+
     public GameObject[] roadsPrefab = new GameObject[4];
     [SerializeField]private GameObject[] arrayOfRoads = new GameObject[7];
     [SerializeField]private int[] colors = new int[7];
 
-    // public GameObject[] countdownNums = GameObject[4];
     [Space]
     public Text countdownText;
     private int countdownTime = 3;
     public GameObject emptyPrefab;
 
-    // private GameObject roads;
     private int nextRoadIndex = 1;
     
-    // [Space]
-    // [Header("Input Manager")]
     private bool isPressedButton = false;
     public GameObject arrowsPlace;
     public Sprite[] arrowsPrefab;
@@ -38,15 +36,27 @@ public class spawnRoad : MonoBehaviour
 
     public GameObject GameOverUI;
 
+    [Space]
+    [Header("game over menu")]
+    public GameObject tryAgain;
+    public GameObject nextLvl;
+    public Text header;
+
+    public string[] cities;
+    public Text levelInfo;
+    private int currentCity = 0;
+
     void Start()
     {
-        InvokeRepeating("Countdown", 0f, 1f);
+        InvokeRepeating("Countdown", 0f, 0.1f);
         
         spr = arrowsPlace.GetComponent<SpriteRenderer>();
 
         currentHp = maxHp;
         curHp.text = currentHp.ToString();
         mxHp.text = maxHp.ToString();
+
+        levelInfo.text = $"From {cities[0]} to {cities[1]}";
     }
 
     // Update is called once per frame
@@ -58,10 +68,20 @@ public class spawnRoad : MonoBehaviour
 
         MakeArrows();
 
+        if(godMode)
+            currentHp = 420;
+
     }
 
     void Countdown()
     {
+        if(currentCity < cities.Length - 1)
+        {
+            levelInfo.text = $"From {cities[currentCity]} to {cities[currentCity + 1]}";
+        } else {
+            levelInfo.text = "Game successfully completed) We hope it was worth it>";
+        }
+
         if(countdownTime > 0)
             countdownText.text = countdownTime.ToString();
         else if(countdownTime == 0)
@@ -82,7 +102,7 @@ public class spawnRoad : MonoBehaviour
         float y = 0.5f;
         
         arrayOfRoads[0] = Instantiate(emptyPrefab, new Vector3(-7.32f,y,0), Quaternion.identity);
-        arrayOfRoads[0].name = "null_" + 0;
+        arrayOfRoads[0].name = "obj_" + 0;
         // colors[0] = 0;
         for(int i = 1; i < arrayOfRoads.Length; i++)
         {
@@ -92,7 +112,7 @@ public class spawnRoad : MonoBehaviour
 
             arrayOfRoads[i] = Instantiate(roadsPrefab[num], new Vector3(x,y,0), Quaternion.identity);
             arrayOfRoads[i].name = "road_" + i;
-            x += 3;
+            x += 3f;
         }
     }
 
@@ -106,16 +126,13 @@ public class spawnRoad : MonoBehaviour
     {
         for(int i = 0; i < arrayOfRoads.Length; i++)
         {
-            if(arrayOfRoads[i].transform.position.x == -7.32f)
+            Vector2 newPosition = arrayOfRoads[i].transform.position;
+            newPosition.x -= 3f;
+            arrayOfRoads[i].transform.position = newPosition;
+
+            if(arrayOfRoads[i].transform.position.x <= -10.32f)
             {
-                moveR(i, 10.68f);
-            } else if(arrayOfRoads[i].transform.position.x == -10.32f) {
-                moveR(i, 7.68f);
-            } else          
-            {
-                Vector2 newPosition = arrayOfRoads[i].transform.position;
-                newPosition.x -= 3f;
-                arrayOfRoads[i].transform.position = newPosition;
+                moveR(i: i, x: 10.68f);
             }
         }
     }
@@ -123,11 +140,11 @@ public class spawnRoad : MonoBehaviour
     {
         Destroy(arrayOfRoads[i]);
 
-                int num = Random.Range(0,4);
-                colors[i] = num;
+        int num = Random.Range(0,4);
+        colors[i] = num;
 
-                arrayOfRoads[i] = Instantiate(roadsPrefab[num], new Vector2(x, 0.5f), Quaternion.identity);
-                arrayOfRoads[i].name = "road_" + i;
+        arrayOfRoads[i] = Instantiate(roadsPrefab[num], new Vector2(x, 0.5f), Quaternion.identity);
+        arrayOfRoads[i].name = "road_" + i;
     }
 
     void InputManager()
@@ -135,19 +152,28 @@ public class spawnRoad : MonoBehaviour
         // if(Input.GetAxis("Horizontal") == 0)
         //     isPressedButton = false;
      
-        if(Input.GetKeyDown(KeyCode.D))
-            Comprarison(0);
-        if(Input.GetKeyDown(KeyCode.A))
-            Comprarison(1);
-        if(Input.GetKeyDown(KeyCode.W))
-            Comprarison(2);
-        if(Input.GetKeyDown(KeyCode.S))
-            Comprarison(3);
+        if (countdownTime <= 0)
+        {
+            if(Input.GetKeyDown(KeyCode.D))
+                Comprarison(0);
+            if(Input.GetKeyDown(KeyCode.A))
+                Comprarison(1);
+            if(Input.GetKeyDown(KeyCode.W))
+                Comprarison(2);
+            if(Input.GetKeyDown(KeyCode.S))
+                Comprarison(3);
+        }
 
         void Comprarison(int color)
         {
             if(colors[nextRoadIndex] == color)
+            {
                 Debug.Log("true" + nextRoadIndex);
+                nextRoadIndex++;
+                passedWay++;
+                FillProgressBar();
+                MoveRoads();
+            }
             else 
             {
                 currentHp--;
@@ -156,16 +182,17 @@ public class spawnRoad : MonoBehaviour
                 if(currentHp <= 0)
                     ActivateGameOverUI();
             }
-                // Debug.Log("false" + nextRoadIndex);
 
-            nextRoadIndex++;
-            passedWay++;
             if(nextRoadIndex == 7)
                 nextRoadIndex = 0;
             
-            FillProgressBar();
-            MoveRoads();
-            
+
+        if(passedWay == totalWay)
+        {
+            currentCity++;
+            Debug.Log(currentCity);
+            ActivateGameOverUI();
+        }
         }
         /* 
         0 == green
@@ -177,7 +204,7 @@ public class spawnRoad : MonoBehaviour
 
     void MakeArrows()
     {
-        if(colors[nextRoadIndex] != null)
+        if(currentHp > 0 && colors[nextRoadIndex] != null)
         {
             switch (colors[nextRoadIndex])
             {
@@ -204,11 +231,6 @@ public class spawnRoad : MonoBehaviour
     {
         progress = (float)passedWay / totalWay;
         progresBar.fillAmount = progress;
-
-        if(passedWay == totalWay)
-        {
-            Debug.Log("Level passed!");
-        }
     }
 
     public void RestartTheGame()
@@ -239,6 +261,14 @@ public class spawnRoad : MonoBehaviour
             Destroy(arrayOfRoads[i]);
 
         GameOverUI.SetActive(true);
-        // Time.timeScale = 0f;
+
+        if(currentHp <= 0)
+        {
+            tryAgain.SetActive(true);
+            header.text = "GAME OVER";
+        } else {
+            nextLvl.SetActive(true);
+            header.text = "YOUR WIN!";
+        }
     }
 }
