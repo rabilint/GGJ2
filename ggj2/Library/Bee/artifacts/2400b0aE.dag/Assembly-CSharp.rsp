@@ -376,6 +376,7 @@
 "Assets/code/moveScript.cs"
 "Assets/code/movement.cs"
 "Assets/code/spawnRoad.cs"
+"Assets/code/uiController.cs"
 -langversion:9.0
 
 /deterministic

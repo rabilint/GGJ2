@@ -36,10 +36,12 @@ public class spawnRoad : MonoBehaviour
     public Text curHp;
     public Text mxHp;
 
+    public GameObject GameOverUI;
+
     void Start()
     {
         InvokeRepeating("Countdown", 0f, 1f);
-        SpawnRoads();
+        
         spr = arrowsPlace.GetComponent<SpriteRenderer>();
 
         currentHp = maxHp;
@@ -66,7 +68,8 @@ public class spawnRoad : MonoBehaviour
             countdownText.text = "GO!";
         else
         {
-            Destroy(countdownText);
+            SpawnRoads();
+            countdownText.text = "";
             CancelInvoke("Countdown");
         }
 
@@ -95,8 +98,8 @@ public class spawnRoad : MonoBehaviour
 
     void MainGameplay()
     {
-        if(countdownTime <= 0 && Input.GetMouseButtonDown(0)) 
-            MoveRoads();
+        /* if(countdownTime <= 0 && Input.GetMouseButtonDown(0)) 
+            MoveRoads(); */
     }
 
     void MoveRoads()
@@ -149,6 +152,9 @@ public class spawnRoad : MonoBehaviour
             {
                 currentHp--;
                 curHp.text = currentHp.ToString();
+
+                if(currentHp <= 0)
+                    ActivateGameOverUI();
             }
                 // Debug.Log("false" + nextRoadIndex);
 
@@ -203,5 +209,36 @@ public class spawnRoad : MonoBehaviour
         {
             Debug.Log("Level passed!");
         }
+    }
+
+    public void RestartTheGame()
+    {
+        // Time.timeScale = 1f;
+
+        currentHp = maxHp;
+        passedWay = 0;
+        progresBar.fillAmount = 0;
+        nextRoadIndex = 1;
+
+        countdownTime = 3;
+        InvokeRepeating("Countdown", 0f, 1f);
+
+        curHp.text = currentHp.ToString();
+        
+        GameOverUI.SetActive(false);
+    }
+
+    public void OutTheGame()
+    {
+        Debug.Log("Out");
+    }
+
+    void ActivateGameOverUI()
+    {
+        for(int i = 0; i < arrayOfRoads.Length; i++)
+            Destroy(arrayOfRoads[i]);
+
+        GameOverUI.SetActive(true);
+        // Time.timeScale = 0f;
     }
 }
