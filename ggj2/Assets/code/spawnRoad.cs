@@ -184,7 +184,7 @@ public class spawnRoad : MonoBehaviour
                 f.Play();
                 curHp.text = currentHp.ToString();
 
-                if(currentHp <= 0)
+                if(currentHp <= 0 && !GameOverUI.activeSelf)
                     ActivateGameOverUI();
             }
 
