@@ -9,6 +9,9 @@ public class uiController : MonoBehaviour
     public GameObject TargetObj;
     private spawnRoad _actionTarget;
 
+    public GameObject GameoverMenu;
+    public GameObject SettingsMenu;
+
     int activeSceneIndex;
 
 
@@ -20,17 +23,22 @@ public class uiController : MonoBehaviour
 
     public void Restart()
     {
-        _actionTarget.RestartTheGame();
+        _actionTarget.RestartTheGame(playerWon: _actionTarget.currentHp > 0);
     }
 
-    public void Out()
+    // public void Out()
+    // {
+    //     _actionTarget.OutTheGame();
+    // }
+
+    public void Exit()
     {
-        _actionTarget.OutTheGame();
+        SceneManager.LoadScene(0);
     }
 
-    public void NextLvl()
+    public void Settings()
     {
-        SceneManager.LoadScene(activeSceneIndex + 1);
+        SettingsMenu.SetActive(!SettingsMenu.activeSelf);
+        GameoverMenu.SetActive(!GameoverMenu.activeSelf);
     }
-    
 }

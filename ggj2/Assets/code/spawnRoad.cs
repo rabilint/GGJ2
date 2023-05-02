@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class spawnRoad : MonoBehaviour
 {
     public bool godMode = false;
+    public GameObject targetScript;
+    [Space]
 
     public GameObject[] roadsPrefab = new GameObject[4];
     [SerializeField]private GameObject[] arrayOfRoads = new GameObject[7];
@@ -28,7 +30,8 @@ public class spawnRoad : MonoBehaviour
 
     public Image progresBar;
     public float progress = 0.0f;
-    public int totalWay = 30;
+    public int totalWay = 10;
+    public int howMuchToAdd = 5;
     public int passedWay = 0;
 
 
@@ -37,7 +40,12 @@ public class spawnRoad : MonoBehaviour
     public Text curHp;
     public Text mxHp;
 
-    public GameObject GameOverUI;
+    public Text totalWay_obj;
+    public Text passedWay_obj;
+    public bool skipTimer = false;
+    public GameObject skipTimerUiCheck;
+
+    public GameObject GameOverCanvas;
 
     [Space]
     [Header("game over menu")]
@@ -45,13 +53,18 @@ public class spawnRoad : MonoBehaviour
     public GameObject nextLvl;
     public Text header;
 
+    public GameObject GameoverMenuu;
+    public GameObject SettingsMenuu;
+
     public string[] cities;
     public Text levelInfo;
     private int currentCity = 0;
 
     void Start()
     {
-        InvokeRepeating("Countdown", 0f, 0.1f);
+        InvokeRepeating("Countdown", 0f, 0.5f);
+        FillProgressBar();
+        totalWay_obj.text = totalWay.ToString();
         
         spr = arrowsPlace.GetComponent<SpriteRenderer>();
 
@@ -89,11 +102,13 @@ public class spawnRoad : MonoBehaviour
             countdownText.text = countdownTime.ToString();
         else if(countdownTime == 0)
             countdownText.text = "GO!";
-        else
+
+        if(countdownTime < 0 || skipTimer)
         {
             SpawnRoads();
             countdownText.text = "";
             CancelInvoke("Countdown");
+            countdownTime = -1;
         }
 
         countdownTime--;
@@ -111,7 +126,6 @@ public class spawnRoad : MonoBehaviour
         {
             int num = Random.Range(0,4);
             colors[i] = num;
-            // Debug.Log(colors[i]);
 
             arrayOfRoads[i] = Instantiate(roadsPrefab[num], new Vector3(x,y,0), Quaternion.identity);
             arrayOfRoads[i].name = "road_" + i;
@@ -151,11 +165,8 @@ public class spawnRoad : MonoBehaviour
     }
 
     void InputManager()
-    {
-        // if(Input.GetAxis("Horizontal") == 0)
-        //     isPressedButton = false;
-     
-        if (countdownTime <= 0)
+    {     
+        if (countdownTime <= 0 && !GameOverCanvas.activeSelf)
         {
             if(Input.GetKeyDown(KeyCode.D))
                 Comprarison(0);
@@ -165,6 +176,10 @@ public class spawnRoad : MonoBehaviour
                 Comprarison(2);
             if(Input.GetKeyDown(KeyCode.S))
                 Comprarison(3);
+        }
+
+        if(Input.GetKeyDown(KeyCode.Space) && GameOverCanvas.activeSelf) {
+            RestartTheGame(playerWon: currentHp > 0);
         }
 
         void Comprarison(int color)
@@ -184,7 +199,7 @@ public class spawnRoad : MonoBehaviour
                 f.Play();
                 curHp.text = currentHp.ToString();
 
-                if(currentHp <= 0 && !GameOverUI.activeSelf)
+                if(currentHp <= 0)
                     ActivateGameOverUI();
             }
 
@@ -236,28 +251,30 @@ public class spawnRoad : MonoBehaviour
     {
         progress = (float)passedWay / totalWay;
         progresBar.fillAmount = progress;
+
+        passedWay_obj.text = passedWay.ToString();
     }
 
-    public void RestartTheGame()
+    public void RestartTheGame(bool playerWon)
     {
-        // Time.timeScale = 1f;
-
         currentHp = maxHp;
         passedWay = 0;
         progresBar.fillAmount = 0;
-        nextRoadIndex = 1;
+
+        if (playerWon)
+        {
+            totalWay += howMuchToAdd;
+            howMuchToAdd++;//= (int)System.Math.Round(howMuchToAdd * 1.4f);
+            nextRoadIndex = 1;
+            totalWay_obj.text = totalWay.ToString();
+        }
 
         countdownTime = 3;
-        InvokeRepeating("Countdown", 0f, 1f);
+        InvokeRepeating("Countdown", 0f, 0.5f);
 
         curHp.text = currentHp.ToString();
         
-        GameOverUI.SetActive(false);
-    }
-
-    public void OutTheGame()
-    {
-        Debug.Log("Out");
+        GameOverCanvas.SetActive(false);
     }
 
     void ActivateGameOverUI()
@@ -265,7 +282,10 @@ public class spawnRoad : MonoBehaviour
         for(int i = 0; i < arrayOfRoads.Length; i++)
             Destroy(arrayOfRoads[i]);
 
-        GameOverUI.SetActive(true);
+        GameOverCanvas.SetActive(true);
+        
+        GameoverMenuu.SetActive(true);
+        SettingsMenuu.SetActive(false);
 
         if(currentHp <= 0)
         {
@@ -276,4 +296,21 @@ public class spawnRoad : MonoBehaviour
             header.text = "YOUR WIN!";
         }
     }
+
+    public void SwitchSkipMode()
+    {
+        skipTimer = !skipTimer;
+        skipTimerUiCheck.SetActive(skipTimer);
+    }
 }
+
+/* 
+возможность вкл/выкл таймера в начале
+
+на пробел игра перезапускается
+
+добавить кнопку рестарта (или hotKey)
+
+после прохождения уровня текущий путь не обновляется
+
+ */
