@@ -4,10 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class uiController : MonoBehaviour
+public class uiContr : MonoBehaviour
 {
     public GameObject TargetObj;
-    private spawnRoad _actionTarget;
+    private mainScript _actionTarget;
 
     public GameObject GameoverMenu;
     public GameObject SettingsMenu;
@@ -18,7 +18,7 @@ public class uiController : MonoBehaviour
     void Start()
     {
         activeSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        _actionTarget = TargetObj.GetComponent<spawnRoad>();
+        _actionTarget = TargetObj.GetComponent<mainScript>();
     }
 
     public void Restart()

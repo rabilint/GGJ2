@@ -2940,7 +2940,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 959560241}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76a040159adecf71e8c865a6a8ae394e, type: 3}
+  m_Script: {fileID: 11500000, guid: 6c0cd1d1d7da6bc8d886d85c0f46b055, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   TargetObj: {fileID: 962503305}
@@ -2974,10 +2974,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 962503305}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 395be33823c534b33b344b692dbea147, type: 3}
+  m_Script: {fileID: 11500000, guid: ee0f8a4904b78f872bb97592b47384cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godMode: 1
+  godMode: 0
   targetScript: {fileID: 0}
   roadsPrefab:
   - {fileID: 7770343521250241746, guid: 51659a3728bbdc007b130f33f5cf7266, type: 3}
@@ -3001,12 +3001,12 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 451eb0b509528367eb02bf6358375e45, type: 3}
   - {fileID: 21300000, guid: 88eef2622c2168ddbb46cc05c3890d39, type: 3}
   - {fileID: 21300000, guid: ba425e29471759681a082845d814070e, type: 3}
-  f: {fileID: 962503308}
-  d: {fileID: 962503309}
+  f: {fileID: 0}
+  d: {fileID: 0}
   progresBar: {fileID: 1835885565}
   progress: 0
   totalWay: 10
-  howMuchToAdd: 0
+  howMuchToAdd: 1
   passedWay: 0
   maxHp: 3
   currentHp: 0
@@ -3015,21 +3015,18 @@ MonoBehaviour:
   totalWay_obj: {fileID: 1253993037}
   passedWay_obj: {fileID: 1905512506}
   skipTimer: 0
-  skipTimerUiCheck: {fileID: 1303711159}
-  GameOverCanvas: {fileID: 943676038}
   tryAgain: {fileID: 456089736}
   nextLvl: {fileID: 149586134}
   header: {fileID: 699348285}
+  skipTimerUiCheck: {fileID: 1303711159}
+  GameOverCanvas: {fileID: 943676038}
   GameoverMenuu: {fileID: 346992559}
   SettingsMenuu: {fileID: 513185723}
   cities:
-  - Udaipur
-  - Kyoto
-  - Bangkok
-  - Jaipur
-  - Seoul
-  - Singapore
-  - Mumbai
+  - London
+  - Berlin
+  - Lviv
+  - Kyiv
   levelInfo: {fileID: 389149659}
 --- !u!4 &962503307
 Transform:
@@ -4947,9 +4944,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76a040159adecf71e8c865a6a8ae394e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetObj: {fileID: 962503305}
-  GameoverMenu: {fileID: 0}
-  SettingsMenu: {fileID: 0}
 --- !u!1 &2140277436
 GameObject:
   m_ObjectHideFlags: 0

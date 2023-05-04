@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class spawnRoad : MonoBehaviour
+public class mainScript : MonoBehaviour
 {
     public bool godMode = false;
     public GameObject targetScript;
@@ -43,15 +43,15 @@ public class spawnRoad : MonoBehaviour
     public Text totalWay_obj;
     public Text passedWay_obj;
     public bool skipTimer = false;
-    public GameObject skipTimerUiCheck;
-
-    public GameObject GameOverCanvas;
 
     [Space]
     [Header("game over menu")]
     public GameObject tryAgain;
     public GameObject nextLvl;
     public Text header;
+
+    public GameObject skipTimerUiCheck;
+    public GameObject GameOverCanvas;
 
     public GameObject GameoverMenuu;
     public GameObject SettingsMenuu;
@@ -176,6 +176,9 @@ public class spawnRoad : MonoBehaviour
                 Comprarison(2);
             if(Input.GetKeyDown(KeyCode.S))
                 Comprarison(3);
+
+            if(Input.GetKeyDown(KeyCode.W))
+                Debug.Log("it work");
         }
 
         if(Input.GetKeyDown(KeyCode.Space) && GameOverCanvas.activeSelf) {
@@ -187,7 +190,7 @@ public class spawnRoad : MonoBehaviour
             if(colors[nextRoadIndex] == color)
             {
                 Debug.Log("true" + nextRoadIndex);
-                d.Play();
+                // d.Play();
                 nextRoadIndex++;
                 passedWay++;
                 FillProgressBar();
@@ -196,7 +199,7 @@ public class spawnRoad : MonoBehaviour
             else 
             {
                 currentHp--;
-                f.Play();
+                // f.Play();
                 curHp.text = currentHp.ToString();
 
                 if(currentHp <= 0)
@@ -260,12 +263,14 @@ public class spawnRoad : MonoBehaviour
         currentHp = maxHp;
         passedWay = 0;
         progresBar.fillAmount = 0;
+        passedWay_obj.text = passedWay.ToString();
 
+            nextRoadIndex = 1; //?
+            
         if (playerWon)
         {
             totalWay += howMuchToAdd;
             howMuchToAdd++;//= (int)System.Math.Round(howMuchToAdd * 1.4f);
-            nextRoadIndex = 1;
             totalWay_obj.text = totalWay.ToString();
         }
 
@@ -289,11 +294,11 @@ public class spawnRoad : MonoBehaviour
 
         if(currentHp <= 0)
         {
-            tryAgain.SetActive(true);
             header.text = "GAME OVER";
+            tryAgain.SetActive(true);
         } else {
-            nextLvl.SetActive(true);
             header.text = "YOUR WIN!";
+            nextLvl.SetActive(true);
         }
     }
 
