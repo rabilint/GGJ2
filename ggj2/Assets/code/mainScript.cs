@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class mainScript : MonoBehaviour
 {
     public bool godMode = false;
-    public GameObject targetScript;
     [Space]
 
     public GameObject[] roadsPrefab = new GameObject[4];
@@ -58,10 +58,19 @@ public class mainScript : MonoBehaviour
 
     public string[] cities;
     public Text levelInfo;
-    private int currentCity = 0;
+    private int currentCity;
+
+    public int[] wayToCities;
+    public Text moneyDisplayer;
+    public int[] pathToCities = new int[] {0, 7, 15};
 
     void Start()
     {
+        cities = mapController.citiesName;
+        currentCity = mapController.cityIndex;
+        if(currentCity == 0) currentCity = 1;
+        totalWay = pathToCities[currentCity];
+
         InvokeRepeating("Countdown", 0f, 0.5f);
         FillProgressBar();
         totalWay_obj.text = totalWay.ToString();
@@ -71,15 +80,14 @@ public class mainScript : MonoBehaviour
         currentHp = maxHp;
         curHp.text = currentHp.ToString();
         mxHp.text = maxHp.ToString();
+        moneyDisplayer.text = mapController.money.ToString();
 
-        levelInfo.text = $"From {cities[0]} to {cities[1]}";
+        levelInfo.text = $"From {cities[currentCity - 1]} to {cities[currentCity]}";
     }
 
     // Update is called once per frame
     void Update()
     {
-        MainGameplay();
-
         InputManager();
 
         MakeArrows();
@@ -93,11 +101,12 @@ public class mainScript : MonoBehaviour
     {
         if(currentCity < cities.Length - 1)
         {
-            levelInfo.text = $"From {cities[currentCity]} to {cities[currentCity + 1]}";
+            levelInfo.text = $"From {cities[currentCity - 1]} to {cities[currentCity]}";
         } else {
             levelInfo.text = "Game successfully completed) We hope it was worth it>";
         }
 
+            //start countdown
         if(countdownTime > 0)
             countdownText.text = countdownTime.ToString();
         else if(countdownTime == 0)
@@ -131,12 +140,6 @@ public class mainScript : MonoBehaviour
             arrayOfRoads[i].name = "road_" + i;
             x += 3f;
         }
-    }
-
-    void MainGameplay()
-    {
-        /* if(countdownTime <= 0 && Input.GetMouseButtonDown(0)) 
-            MoveRoads(); */
     }
 
     void MoveRoads()
@@ -182,7 +185,7 @@ public class mainScript : MonoBehaviour
         }
 
         if(Input.GetKeyDown(KeyCode.Space) && GameOverCanvas.activeSelf) {
-            RestartTheGame(playerWon: currentHp > 0);
+            RestartTheGame();
         }
 
         void Comprarison(int color)
@@ -258,8 +261,11 @@ public class mainScript : MonoBehaviour
         passedWay_obj.text = passedWay.ToString();
     }
 
-    public void RestartTheGame(bool playerWon)
+    public void RestartTheGame()
     {
+        mapController.money -= 5;
+        moneyDisplayer.text = mapController.money.ToString();
+
         currentHp = maxHp;
         passedWay = 0;
         progresBar.fillAmount = 0;
@@ -267,7 +273,7 @@ public class mainScript : MonoBehaviour
 
             nextRoadIndex = 1; //?
             
-        if (playerWon)
+        if (false)
         {
             totalWay += howMuchToAdd;
             howMuchToAdd++;//= (int)System.Math.Round(howMuchToAdd * 1.4f);
@@ -294,10 +300,10 @@ public class mainScript : MonoBehaviour
 
         if(currentHp <= 0)
         {
-            header.text = "GAME OVER";
+            header.text = "Loss...";
             tryAgain.SetActive(true);
         } else {
-            header.text = "YOUR WIN!";
+            header.text = "Path Complete!";
             nextLvl.SetActive(true);
         }
     }
@@ -306,6 +312,12 @@ public class mainScript : MonoBehaviour
     {
         skipTimer = !skipTimer;
         skipTimerUiCheck.SetActive(skipTimer);
+    }
+    
+    public void ToMenu()
+    {
+        mapController.money += 20;
+        SceneManager.LoadScene("Map");
     }
 }
 
@@ -317,5 +329,4 @@ public class mainScript : MonoBehaviour
 добавить кнопку рестарта (или hotKey)
 
 после прохождения уровня текущий путь не обновляется
-
  */

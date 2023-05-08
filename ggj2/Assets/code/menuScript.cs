@@ -9,15 +9,12 @@ public class menuScript : MonoBehaviour
 
     public void Play()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("Map");
     }
 
     public void Creators()
     {
-        if(creators.activeSelf)
-            creators.SetActive(false);
-        else
-            creators.SetActive(true);
+        creators.SetActive(!creators.activeSelf);
     }
 
     public void QuitGame()
