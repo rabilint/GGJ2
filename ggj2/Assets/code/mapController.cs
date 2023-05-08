@@ -6,7 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class mapController : MonoBehaviour
 {
-    public static string[] citiesName = {"Solitude", "Marthal", "Dawnstar"};
+    public static string[] citiesName = {"Solitude", "Marthal", "Dawnstar", "Whiterun", "Winterhold", "Windhelm", "Falkreath", "Markarth", "Riften"};
+    // public static var allCities = new Dictionary<string, int
     // public int pathToCities = {"0", "7", "15"}; 
     // public GameObject[] citiesButton;
     public GameObject StartButton;
@@ -14,11 +15,20 @@ public class mapController : MonoBehaviour
 
     public static int money = 50;
     public Text moneyDisplay;
+    public GameObject mapSettingsInterface;
+
+    void Awake()
+    {
+        PlayerPrefs.SetInt("totalMoney", money);
+    }
     
     void Start()
     {
+        money = PlayerPrefs.GetInt("totalMoney");
+
         StartButton.SetActive(false);
         moneyDisplay.text = money.ToString();
+        Debug.Log(money);
     }
 
     public void ChooseCityToJourney(int index)
@@ -35,5 +45,34 @@ public class mapController : MonoBehaviour
         //activate some UI;
         money -= 10;
         SceneManager.LoadScene("RunGame");
+    }
+
+    public void SettingsInMap()
+    {
+        mapSettingsInterface.SetActive(!mapSettingsInterface.activeSelf);
+    }
+
+    public void ToMianMenu()
+    {
+        SceneManager.LoadScene("MianMenu");
+    }
+
+    void Update() 
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+            SettingsInMap();
+
+        if (Input.GetKeyDown(KeyCode.F11))
+            FullscreenMode();
+
+        moneyDisplay.text = money.ToString();
+    }
+
+    public void FullscreenMode()
+    {
+        if(Screen.fullScreen)
+            Screen.SetResolution(1280, 720, false);
+        else 
+            Screen.SetResolution(1920, 1080, true);
     }
 }

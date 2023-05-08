@@ -21,4 +21,15 @@ public class menuScript : MonoBehaviour
     {
         Application.Quit();
     }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.F11))
+        {
+            if(Screen.fullScreen)
+                Screen.SetResolution(1280, 720, false);
+            else 
+                Screen.SetResolution(1920, 1080, true);
+        }
+    }
 }

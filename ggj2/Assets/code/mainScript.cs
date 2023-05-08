@@ -62,14 +62,32 @@ public class mainScript : MonoBehaviour
 
     public int[] wayToCities;
     public Text moneyDisplayer;
-    public int[] pathToCities = new int[] {0, 7, 15};
+    public int[] pathToCities = new int[] {0, 8, 17, 30, 57, 72, 85, 40, 90};
+    // {"Solitude", "Marthal", "Dawnstar", "Whiterun", "Winterhold", "Windhelm", "Falkreath", "Markarth", "Riften"};
+
+    private int countOfSpawnedRoad = 0;
+
+    [Space][Header("Timer")]
+    private float startTime;
+    public float timeLimitation;
+    private float timerDuration;
+    public Text timerText;
+
+    public GameObject ExitMenuUi;
+    private bool pause = false;
 
     void Start()
     {
+        timerText.text = "  -/-";
+
         cities = mapController.citiesName;
         currentCity = mapController.cityIndex;
-        if(currentCity == 0) currentCity = 1;
+        if(currentCity <= 0) currentCity = 1;
+
         totalWay = pathToCities[currentCity];
+
+        Debug.Log(System.Convert.ToInt32(System.Math.Sqrt(totalWay) * 1.5f));
+        timeLimitation = totalWay * 2 + System.Convert.ToInt32(System.Math.Sqrt(totalWay) * 1.5f);
 
         InvokeRepeating("Countdown", 0f, 0.5f);
         FillProgressBar();
@@ -82,29 +100,44 @@ public class mainScript : MonoBehaviour
         mxHp.text = maxHp.ToString();
         moneyDisplayer.text = mapController.money.ToString();
 
-        levelInfo.text = $"From {cities[currentCity - 1]} to {cities[currentCity]}";
+        levelInfo.text = $"From {cities[0]} to {cities[currentCity]}";
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F11))
+        {
+            if(Screen.fullScreen)
+                Screen.SetResolution(1280, 720, false);
+            else 
+                Screen.SetResolution(1920, 1080, true);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape) && !GameOverCanvas.activeSelf)
+        {
+            EscapeMenu();
+        }
+        
         InputManager();
 
         MakeArrows();
 
         if(godMode)
             currentHp = 420;
-
+        
+        TimerUI();
     }
 
     void Countdown()
     {
-        if(currentCity < cities.Length - 1)
+        /* if(currentCity < cities.Length - 1)
         {
             levelInfo.text = $"From {cities[currentCity - 1]} to {cities[currentCity]}";
         } else {
             levelInfo.text = "Game successfully completed) We hope it was worth it>";
-        }
+        } */
+        bool timerStart = false;
 
             //start countdown
         if(countdownTime > 0)
@@ -118,9 +151,26 @@ public class mainScript : MonoBehaviour
             countdownText.text = "";
             CancelInvoke("Countdown");
             countdownTime = -1;
+
+            startTime = Time.time;
+            timerDuration = totalWay * 2;
+            timerText.text = timeLimitation.ToString();
         }
 
         countdownTime--;
+    }
+
+    void TimerUI()
+    {
+        if(countdownTime <= -1)
+        {
+            if(timeLimitation >= 0 && !pause)
+            {
+                timeLimitation -= Time.deltaTime;
+                timerText.text = timeLimitation.ToString("F2");
+            }
+            // else Debug.Log("Time Out!");
+        }
     }
 
     void SpawnRoads()
@@ -139,6 +189,8 @@ public class mainScript : MonoBehaviour
             arrayOfRoads[i] = Instantiate(roadsPrefab[num], new Vector3(x,y,0), Quaternion.identity);
             arrayOfRoads[i].name = "road_" + i;
             x += 3f;
+
+            countOfSpawnedRoad++;
         }
     }
 
@@ -163,8 +215,15 @@ public class mainScript : MonoBehaviour
         int num = Random.Range(0,4);
         colors[i] = num;
 
-        arrayOfRoads[i] = Instantiate(roadsPrefab[num], new Vector2(x, 0.5f), Quaternion.identity);
-        arrayOfRoads[i].name = "road_" + i;
+        if(countOfSpawnedRoad < totalWay)
+        {
+            arrayOfRoads[i] = Instantiate(roadsPrefab[num], new Vector2(x, 0.5f), Quaternion.identity);
+            arrayOfRoads[i].name = "road_" + i;
+            countOfSpawnedRoad++;
+        } else {
+            arrayOfRoads[i] = Instantiate(emptyPrefab, new Vector2(x, 0.5f), Quaternion.identity);
+            arrayOfRoads[i].name = "empty_" + i;
+        }
     }
 
     void InputManager()
@@ -263,7 +322,11 @@ public class mainScript : MonoBehaviour
 
     public void RestartTheGame()
     {
+        pause = false;
+
         mapController.money -= 5;
+        PlayerPrefs.SetInt("totalMoney", mapController.money);
+        
         moneyDisplayer.text = mapController.money.ToString();
 
         currentHp = maxHp;
@@ -290,6 +353,8 @@ public class mainScript : MonoBehaviour
 
     void ActivateGameOverUI()
     {
+        pause = true;
+
         for(int i = 0; i < arrayOfRoads.Length; i++)
             Destroy(arrayOfRoads[i]);
 
@@ -301,10 +366,34 @@ public class mainScript : MonoBehaviour
         if(currentHp <= 0)
         {
             header.text = "Loss...";
+            header.fontSize = 45;
             tryAgain.SetActive(true);
         } else {
             header.text = "Path Complete!";
+            header.fontSize = 39;
             nextLvl.SetActive(true);
+            mapController.money += 10 + System.Convert.ToInt32(System.Math.Sqrt(passedWay) * 4);
+            PlayerPrefs.SetInt("totalMoney", mapController.money);
+        }
+
+        moneyDisplayer.text = mapController.money.ToString();
+    }
+
+    void EscapeMenu()
+    {
+        // ExitMenuUi.SetActive(!ExitMenuUi.activeSelf);
+        if(!pause)
+        {
+            GameOverCanvas.SetActive(true);
+            
+            GameoverMenuu.SetActive(true);
+            SettingsMenuu.SetActive(false);
+
+            header.text = "Pause";
+            pause = true;
+        } else {
+            GameOverCanvas.SetActive(false);
+            pause = false;
         }
     }
 
@@ -316,7 +405,8 @@ public class mainScript : MonoBehaviour
     
     public void ToMenu()
     {
-        mapController.money += 20;
+        // bufferMoney += totalWay * System.Convert.ToInt32(System.Math.Pow((float)totalWay / 4, 2));
+
         SceneManager.LoadScene("Map");
     }
 }
