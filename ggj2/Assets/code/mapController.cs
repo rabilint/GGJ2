@@ -16,11 +16,6 @@ public class mapController : MonoBehaviour
     public static int money = 50;
     public Text moneyDisplay;
     public GameObject mapSettingsInterface;
-
-    void Awake()
-    {
-        PlayerPrefs.SetInt("totalMoney", money);
-    }
     
     void Start()
     {
@@ -74,5 +69,10 @@ public class mapController : MonoBehaviour
             Screen.SetResolution(1280, 720, false);
         else 
             Screen.SetResolution(1920, 1080, true);
+    }
+
+    public void RickRolled()
+    {
+        Application.OpenURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
     }
 }

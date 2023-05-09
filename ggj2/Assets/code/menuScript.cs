@@ -32,4 +32,9 @@ public class menuScript : MonoBehaviour
                 Screen.SetResolution(1920, 1080, true);
         }
     }
+
+    public void IntroLoading()
+    {
+        SceneManager.LoadScene("Intro");
+    }
 }
