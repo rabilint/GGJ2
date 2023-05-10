@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Video;
 
 public class mapController : MonoBehaviour
 {
@@ -16,6 +17,10 @@ public class mapController : MonoBehaviour
     public static int money = 50;
     public Text moneyDisplay;
     public GameObject mapSettingsInterface;
+
+    public AudioSource backgroundMusic;
+    public GameObject rRoll;
+    public VideoPlayer rRollVideo;
     
     void Start()
     {
@@ -24,6 +29,8 @@ public class mapController : MonoBehaviour
         StartButton.SetActive(false);
         moneyDisplay.text = money.ToString();
         Debug.Log(money);
+
+        backgroundMusic.Play();
     }
 
     public void ChooseCityToJourney(int index)
@@ -38,8 +45,13 @@ public class mapController : MonoBehaviour
     public void StartJourney()
     {
         //activate some UI;
-        money -= 10;
-        SceneManager.LoadScene("RunGame");
+        if(cityIndex == 3)
+            Debug.Log("Whiterun");
+        else {
+            money -= 10;
+            PlayerPrefs.SetInt("totalMoney", money);
+            SceneManager.LoadScene("RunGame");
+        }
     }
 
     public void SettingsInMap()
@@ -73,6 +85,26 @@ public class mapController : MonoBehaviour
 
     public void RickRolled()
     {
-        Application.OpenURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+        // Application.OpenURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+        StartCoroutine(RickRoll());
+    }
+
+    IEnumerator RickRoll()
+    {
+        rRoll.SetActive(true);
+        backgroundMusic.Pause();
+        yield return new WaitForSeconds((float)rRollVideo.length);
+        
+        mapSettingsInterface.SetActive(false);
+        rRoll.SetActive(false);
+        backgroundMusic.UnPause();
+        money += 10;
+        PlayerPrefs.SetInt("totalMoney", money);
+    }
+
+    public void AddMoney()
+    {
+        money--;
+        PlayerPrefs.SetInt("totalMoney", money);
     }
 }
