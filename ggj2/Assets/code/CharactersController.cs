@@ -27,21 +27,22 @@ public class CharactersController : MonoBehaviour
     public GameObject wRun;
     public VideoPlayer wRunVid;
     public GameObject Balgruuf;
+    public string[] BalgruufTxt;
 
 
     private void Start()
     {
         ralofAnimation.enabled = false;
         textObj.text = "";
-        if(playerComeFromIntro) StartCoroutine(PlayAnimation());
+        if(playerComeFromIntro) StartCoroutine(StartDialogue());
     }
 
-    private IEnumerator PlayAnimation()
+    private IEnumerator StartDialogue()
     {
         ralof.SetActive(true);
         yield return new WaitForSeconds(1.8f);
         ralofAnimation.enabled = true;
-        ralofAnimation.SetTrigger("Slide");
+        // ralofAnimation.SetTrigger("Slide");
 
         yield return new WaitForSeconds(ralofAnimation.GetCurrentAnimatorStateInfo(0).length);
         ralofAnimation.enabled = false;
@@ -50,19 +51,39 @@ public class CharactersController : MonoBehaviour
         textBg.SetActive(true);
         GladYourHere.Play();
 
-        StartCoroutine(TextPrinter());
+        StartCoroutine(Dialog(ralofStartPhrases, ralof));
     }
 
-    IEnumerator TextPrinter()
+    IEnumerator Dialog(string[] phrases, GameObject characterWhoSpeak)
     {
-        if(phraseIndex < ralofStartPhrases.Length)
+        // Debug.Log("length: " + phrases.Length);
+        Debug.Log(phrases);
+        for(int i = 0; i < phrases.Length; i++)
         {
-            textObj.text = "";
-            for(int j = 0; j < ralofStartPhrases[phraseIndex].Length; j++)
+            StartCoroutine(TextPrinter(phrases[i], phrases.Length, characterWhoSpeak));
+            while(!Input.GetMouseButtonDown(0) && !typing && dialogIsActive)
             {
-                textObj.text += ralofStartPhrases[phraseIndex][j];
+                yield return null;
+            }
+            Debug.Log("+1");
+        }
+    }
+
+    IEnumerator TextPrinter(string str, int iterationController, GameObject character)
+    {
+        Debug.Log("start printing");
+        Debug.Log($"index - {phraseIndex}\n controller - {iterationController}");
+
+        if(phraseIndex < iterationController)
+        {
+            Debug.Log("InputAct");
+            typing = true;
+            textObj.text = "";
+            for(int j = 0; j < str.Length; j++)
+            {
+                textObj.text += str[j];
                 
-                if(ralofStartPhrases[phraseIndex][j] == ',')
+                if(str[j] == ',')
                     yield return new WaitForSeconds(0.25f);
                 else 
                     yield return new WaitForSeconds(0.015f);
@@ -71,20 +92,26 @@ public class CharactersController : MonoBehaviour
         } else {
             Debug.Log("else");
 
-            ralof.SetActive(false);
+            character.SetActive(false);
             textBg.SetActive(false);
 
             StartCoroutine(ActivateTip());
         }
+        phraseIndex++;
+        Debug.Log($"phIndex: {phraseIndex}");
+    }
+
+    void TextInputer(string[] phrasesArray, GameObject character)
+    {
+        StartCoroutine(Dialog(phrasesArray, character));
     }
 
     void Update()
     {
         if(Input.GetMouseButtonDown(0) && !typing && dialogIsActive)
         {
-            phraseIndex++;
             typing = true;
-            StartCoroutine(TextPrinter());
+            // StartCoroutine(TextPrinter());
         }
     }
 
@@ -129,12 +156,13 @@ public class CharactersController : MonoBehaviour
         textObj.text = "";
 
         yield return new WaitForSeconds(0.5f);
-        string bTxt = "I am Balgruuf the Greater!";
-        for(int i = 0; i < bTxt.Length; i++)
-        {
-            textObj.text += bTxt[i];
-            yield return new WaitForSeconds(0.015f);
-        }
+        phraseIndex = 0;
+        
+        // for(int i = 0; i < BalgruufTxt.Length; i++)
+        // {
+        //     textObj.text += BalgruufTxt[j][i];
+        //     yield return new WaitForSeconds(0.015f);
+        // }
         Debug.Log("THE END");
     }
 }
