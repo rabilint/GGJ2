@@ -15,7 +15,7 @@ public class mapController : MonoBehaviour
     public static int cityIndex;
 
     public static int money = 50;
-    public Text moneyDisplay;
+    // public Text moneyDisplay;
     public GameObject mapSettingsInterface;
 
     public AudioSource backgroundMusic;
@@ -27,10 +27,10 @@ public class mapController : MonoBehaviour
         money = PlayerPrefs.GetInt("totalMoney");
 
         StartButton.SetActive(false);
-        moneyDisplay.text = money.ToString();
+        // moneyDisplay.text = money.ToString();
         Debug.Log(money);
 
-        backgroundMusic.Play();
+        // backgroundMusic.Play();
     }
 
     public void ChooseCityToJourney(int index)
@@ -72,7 +72,7 @@ public class mapController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F11))
             FullscreenMode();
 
-        moneyDisplay.text = money.ToString();
+        // moneyDisplay.text = money.ToString();
     }
 
     public void FullscreenMode()

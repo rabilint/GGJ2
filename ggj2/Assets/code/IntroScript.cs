@@ -72,10 +72,10 @@ public class IntroScript : MonoBehaviour
     
     void Update()
     {
-        if(strIndex == mainText.Length && Input.GetMouseButtonDown(0))
+        if(strIndex + 1 == mainText.Length && Input.GetMouseButtonDown(0))
         {
             strIndex += strIndex;
-            StartCoroutine(DeleteText());
+            SceneManager.LoadScene("Map");
         }
 
         if(Input.GetMouseButtonDown(0) && !printing && !VideoSceneIsActive)
@@ -95,17 +95,5 @@ public class IntroScript : MonoBehaviour
             else 
                 Screen.SetResolution(1920, 1080, true);
         }
-    }
-
-    IEnumerator DeleteText()
-    {
-        for(int i = 0; i < textLength; i++)
-        {
-            textObj.text = textObj.text.Substring(0, textLength - i);
-            yield return new WaitForSeconds(0.001f);
-        }
-        textObj.text = "";
-
-        SceneManager.LoadScene("Map");
     }
 }
