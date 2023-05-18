@@ -6954,16 +6954,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textObj: {fileID: 83945752}
   mainText:
-  - 'Hey there, adventurer! Your mission is to gather resources and sell them in
-    the cities. Once you click on the lumber mill, you''ll find the precious resource
-    at your disposal: wood. You can make some serious cash by selling it. Head to
-    the city and hit the "send" button'
-  - "(if it's available, because not all cities will be in need of your materials).
-    Voil\xE0! You've mastered the art of making money. Spend your hard-earned cash
-    on building mines for extracting other valuable materials and upgrading the existing
-    ones."
-  - And guess what? In the shop, you can splurge on materials and even satellites
-    that will help you build an unstoppable army and conquer nations.
+  - ' Hey there, adventurer!'
+  - ' Your mission is to gather resources and sell them in the cities.  Once you
+    click on the lumber mill, you''ll find the precious resource at your disposal:
+    wood. You can make some serious cash by selling it. Head to the city and hit
+    the "send" button'
+  - ( if it`s available? because not all cities not all cities will be in need of
+    your of your materials )
+  - " Voil\xE0! You've mastered the art of making money"
+  - Spend your hard-earned cash on building mines for extracting other valuable materials
+    and upgrading the existing ones.
+  - ' And guess what? In the shop, you can splurge on materials and even satellites
+    that will help you build an unstoppable army and conquer nations.'
   delay: 0.025
 --- !u!1 &588242630
 GameObject:
