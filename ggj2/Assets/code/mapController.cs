@@ -30,7 +30,7 @@ public class mapController : MonoBehaviour
         // moneyDisplay.text = money.ToString();
         Debug.Log(money);
 
-        // backgroundMusic.Play();
+        backgroundMusic.Play();
     }
 
     public void ChooseCityToJourney(int index)
