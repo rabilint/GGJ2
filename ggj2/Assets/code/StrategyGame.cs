@@ -405,10 +405,7 @@ public class StrategyGame : MonoBehaviour
     public void chooseKnight(int index)
     {
         workerIndex = index;
-
-        septims = 10000;
-        septimsObj.text = septims.ToString();
-        
+                
         priceObj.text = workerPrices[workerIndex].ToString();
         workerPowerObj.text = $"+{workerPower[workerIndex]}";
 
@@ -477,7 +474,7 @@ public class StrategyGame : MonoBehaviour
         {
             endBatlleTextObj.fontSize = 44;
             StartCoroutine(SimpleTextOutputer("Throw yourself put of power?"));
-        }
+        } else
         if(!battleIsActive)
         {
             battleIsActive = true;
@@ -534,10 +531,9 @@ public class StrategyGame : MonoBehaviour
     }
     IEnumerator SimpleTextOutputer(string str)
     {
-        endBatlleTextObj.text = "";
         for(int i = 0; i < str.Length; i++)
         {
-            endBatlleTextObj.text += str[i];
+            endBatlleTextObj.text = str.Substring(0, i + 1);
             yield return new WaitForSeconds(0.015f);
         }
     }
