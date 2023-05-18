@@ -56,6 +56,13 @@ public class StrategyGame : MonoBehaviour
         startTime = new float[cost.Length];
         resoursesCount = new int[cost.Length];
 
+        JarlPower = Random.Range(48, 67);
+        totalPowerObj.text = totalPower.ToString();
+        workerPowerObj.text = "0";
+        priceObj.text = "</>";
+        shopUi.SetActive(false);
+        militaryPower.text = $"Military Power: {JarlPower}";
+
         addCities();
         // ChangePosition(5);
 
@@ -73,6 +80,7 @@ public class StrategyGame : MonoBehaviour
         septimsObj.text = "20";
     }
 
+    private int[] upgradeCost;
     public void RiseLevel(int index)
     {
         // if(iteration[index] <= 1.1f) Debug.Log();
@@ -86,14 +94,14 @@ public class StrategyGame : MonoBehaviour
             // pricesPerIteration[index] = Convert.ToInt32(Math.Ceiling(pricesPerIteration[index] * Random.Range(1f, 1.35f)));
             iteration[index] = Mathf.Pow(iteration[index], 0.92f);
 
-            cost[index] += Convert.ToInt32(Math.Ceiling(level[index] * 1.2f * 1.1f));
+            upgradeCost[index] += Convert.ToInt32(Math.Ceiling(level[index] * 1.2f * 1.1f));
 
 
             // if (level[index] % 10 == 0) pricesPerIteration[index] += Convert.ToInt32(Math.Ceiling(pricesPerIteration[index] * Random.Range(1f, 2f)));
             septimsObj.text = septims.ToString();
             resoursesLevel[index].text = (level[index]).ToString();
             // resoursesProfit[index].text = pricesPerIteration[index].ToString();
-            costObj[index].text = cost[index].ToString();
+            costObj[index].text = upgradeCost[index].ToString();
         }
     }
 
@@ -104,6 +112,7 @@ public class StrategyGame : MonoBehaviour
         if(Time.time >= timer)
         {
             timer++;
+            if(timer % 30 == 0) JarlPower++;
             timeAfterLastOffer++;
             CreateRequest();
         }
@@ -210,6 +219,13 @@ public class StrategyGame : MonoBehaviour
         // if(!ResoursesMenuObj.activeSelf) resoursesAnim.SetBool("IsResMenuActive", true);
         // else resoursesAnim.SetBool("IsResMenuActive", false);
         ResMenuContButton.SetActive(!ResMenuContButton.activeSelf);
+        activateShopUi.SetActive(!activateShopUi.activeSelf);
+    }
+    public void ShopMenuController()
+    {
+        shopUi.SetActive(!shopUi.activeSelf);
+        activateShopUi.SetActive(!activateShopUi.activeSelf);
+        ResMenuContButton.SetActive(!ResMenuContButton.activeSelf);
     }
 
     private string offerRes = null;
@@ -225,12 +241,12 @@ public class StrategyGame : MonoBehaviour
     private string cityRequsetName;
     void CreateRequest()
     {
-        if(Random.Range(0,100) <= 20 && offerRes == null && timeAfterLastOffer >= 2  && timer >= 7)
+        if(Random.Range(0,100) <= 20 && offerRes == null && timeAfterLastOffer >= 2  && Time.time >= 7f)
         {
             notificationObj.SetActive(true);
 
             offerID = Random.Range(0, Mathf.Clamp(playerLevel - 1, 0, 7));
-            if(Random.Range(0,100) < 20) offerID = Mathf.Clamp(playerLevel, 1, 7);
+            if(Random.Range(0,100) < 15) offerID = Mathf.Clamp(playerLevel, 1, 7);
             cityID = Random.Range(0, cities.Length);
             offerRes = resoursesName[offerID];
             cityRequsetName = citiesNames[cityID];
@@ -363,8 +379,8 @@ public class StrategyGame : MonoBehaviour
         for(int i = 0; i < citiesNames.Length; i++)
             cities[i] = new City(citiesNames[i], i >= 4, 5);
         cities[1].deliveryTime = 4;
-        cities[2].deliveryTime = 6;
-        cities[6].deliveryTime = 7;
+        cities[2].deliveryTime = 7;
+        cities[6].deliveryTime = 8;
     }
 
 
@@ -382,5 +398,167 @@ public class StrategyGame : MonoBehaviour
             SendMenuUi.SetActive(true);
             activateFromNotif = false;
         }
+    }
+
+    public GameObject[] knightBg;
+    private int workerIndex;
+    public void chooseKnight(int index)
+    {
+        workerIndex = index;
+
+        septims = 10000;
+        septimsObj.text = septims.ToString();
+        
+        priceObj.text = workerPrices[workerIndex].ToString();
+        workerPowerObj.text = $"+{workerPower[workerIndex]}";
+
+        for(int i = 0; i < knightBg.Length; i++)
+        {
+            if(i == index)
+            {
+                knightBg[i].SetActive(!knightBg[i].activeSelf);
+                if(knightBg[i].activeSelf == false)
+                {
+                    workerPowerObj.text = "0";
+                    workerIndex = -1;
+                }
+            }
+            else knightBg[i].SetActive(false);
+        }
+    }
+
+    public Text priceObj;
+    public int[] workerPrices;
+    public int[] workerPower;
+    public Text workerPowerObj;
+    private int totalPower = 0;
+    public Text totalPowerObj;
+    
+    public GameObject shopUi;
+    public GameObject activateShopUi;
+    
+
+    public void Employ()
+    {
+        if(septims >= workerPrices[workerIndex] && workerIndex != -1)
+        {
+            septims-= workerPrices[workerIndex];
+            septimsObj.text = septims.ToString();
+
+            for(int i = 0; i < knightBg.Length; i++)
+                knightBg[i].SetActive(false);
+            totalPower += workerPower[workerIndex];
+            totalPowerObj.text = totalPower.ToString();
+
+            priceObj.text = "</>";
+            workerPowerObj.text = "0";
+            workerIndex = -1;
+        }
+    }
+
+    [Space][Header("fight elements")]
+    public GameObject cityInfoObj;
+    public void WhInfoController()
+    {
+        cityInfoObj.SetActive(!cityInfoObj.activeSelf);
+        if(cityInfoObj.activeSelf == true)
+        {
+            battleIsActive = false;
+            fightProgresBar.fillAmount = 0;
+            battleStatus.text = "";
+            endBatlleTextObj.text = "";
+        }
+    }
+
+    public float JarlPower;
+    public void Fight(int JarlId)
+    {
+        if(playerWhiterunJarl)
+        {
+            endBatlleTextObj.fontSize = 44;
+            StartCoroutine(SimpleTextOutputer("Throw yourself put of power?"));
+        }
+        if(!battleIsActive)
+        {
+            battleIsActive = true;
+            CloseCityInfoButton.SetActive(false);
+            if(Mathf.Pow(JarlPower, (float)Random.Range(103, 109) / 100) <= totalPower)
+                StartCoroutine(Battle(true));
+            else StartCoroutine(Battle(false));
+        }
+    }
+
+    public Image fightProgresBar;
+    public GameObject BalgrufSprite;
+    public GameObject DovakginSprite;
+    public Text whJarlObj;
+    public GameObject battleStatusObj;
+    public Text battleStatus;
+    private bool battleIsActive = false;
+    public Text militaryPower;
+    IEnumerator Battle(bool playerWin)
+    {
+        int battleDuration = 4;//Random.Range(3, 10);
+        float fightStartTime = Time.time;
+
+        while(fightProgresBar.fillAmount < 1f)
+        {
+            yield return new WaitForSeconds(0.007f);
+            fightProgresBar.fillAmount = (Time.time - fightStartTime) / battleDuration;
+        }
+        
+        if(playerWin)
+        {
+            BalgrufSprite.SetActive(false);
+            whJarlObj.text = "Jarl: Shadow Fiend";
+            playerWhiterunJarl = true;
+
+            totalPower -=  Convert.ToInt32(JarlPower * 0.8f);
+            totalPowerObj.text = totalPower.ToString();
+            battleStatus.text = "Victory";
+            battleStatusObj.SetActive(true);
+            yield return new WaitForSeconds(delayyy);
+
+            StartCoroutine(SimpleTextOutputer("Whiterun has a new Jarl!"));
+
+            ShowNewJarlButton.SetActive(true);
+        } else {
+            battleStatus.text = "Loss";
+            battleStatusObj.SetActive(true);
+            StartCoroutine(SimpleTextOutputer("Jarl remained in power"));
+            JarlPower -= Convert.ToInt32(totalPower * 0.8f);
+            totalPower = 0;
+            totalPowerObj.text = "0";
+        }
+        CloseCityInfoButton.SetActive(true);
+    }
+    IEnumerator SimpleTextOutputer(string str)
+    {
+        endBatlleTextObj.text = "";
+        for(int i = 0; i < str.Length; i++)
+        {
+            endBatlleTextObj.text += str[i];
+            yield return new WaitForSeconds(0.015f);
+        }
+    }
+    public Text endBatlleTextObj;
+    public GameObject ShowNewJarlButton;
+    public float delayyy = 1.4f;
+    public GameObject CloseCityInfoButton;
+    private bool playerWhiterunJarl = false;
+    public void ShowNewJarl()
+    {
+        // ShowNewJarlButton.SetActive(false);
+        DovakginSprite.SetActive(true);
+    }
+    public void CloseCityInfo()
+    {
+        cityInfoObj.SetActive(false);
+    }
+
+    public void MoneyCheat()
+    {
+        septims += 1000;
+        septimsObj.text = septims.ToString();
     }
 }
