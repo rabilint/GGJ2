@@ -1149,7 +1149,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 
 --- !u!222 &83945753
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2866,7 +2866,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &271190961
 Transform:
   m_ObjectHideFlags: 0
@@ -6873,13 +6873,14 @@ GameObject:
   - component: {fileID: 582048979}
   - component: {fileID: 582048981}
   - component: {fileID: 582048980}
+  - component: {fileID: 582048982}
   m_Layer: 5
   m_Name: text bg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &582048979
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6939,6 +6940,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 582048978}
   m_CullTransparentMesh: 1
+--- !u!114 &582048982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 582048978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 496744fed13dcdb49b9848702104854a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textObj: {fileID: 83945752}
+  mainText:
+  - 'Hey there, adventurer! Your mission is to gather resources and sell them in
+    the cities. Once you click on the lumber mill, you''ll find the precious resource
+    at your disposal: wood. You can make some serious cash by selling it. Head to
+    the city and hit the "send" button'
+  - "(if it's available, because not all cities will be in need of your materials).
+    Voil\xE0! You've mastered the art of making money. Spend your hard-earned cash
+    on building mines for extracting other valuable materials and upgrading the existing
+    ones."
+  - And guess what? In the shop, you can splurge on materials and even satellites
+    that will help you build an unstoppable army and conquer nations.
+  delay: 0.025
 --- !u!1 &588242630
 GameObject:
   m_ObjectHideFlags: 0
@@ -9774,11 +9800,11 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: a96618c9d339b3a4ab129a903d88e0cf, type: 3}
-  m_PlayOnAwake: 0
-  m_Volume: 0.03
+  m_audioClip: {fileID: 8300000, guid: 45f4d5a65c6a46b498b499ebcda4ead8, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0.09
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
