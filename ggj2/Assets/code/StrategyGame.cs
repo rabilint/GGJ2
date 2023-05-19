@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 using System.Collections;
+using UnityEngine.Video;
 
 public class StrategyGame : MonoBehaviour
 {
@@ -80,7 +81,7 @@ public class StrategyGame : MonoBehaviour
         septimsObj.text = "20";
     }
 
-    private int[] upgradeCost;
+    public int[] upgradeCost;
     public void RiseLevel(int index)
     {
         // if(iteration[index] <= 1.1f) Debug.Log();
@@ -194,8 +195,15 @@ public class StrategyGame : MonoBehaviour
     public void ActivateSendMenu(int city)
     {
         // SendMenuUi.SetActive(true);
+        cityID = city;
         ChangePosition(city);
-        SendMenuElements.SetActive(cityRequsetName != null && cityRequsetName == cities[city].name);
+        SendMenuElements.SetActive(cities[city].offerResName != null); //(cityRequsetName != null && cityRequsetName == cities[city].name);
+        
+        transportInfoObj.text = cities[city].offerResName;
+        trInfoNumObj.text = cities[city].offerResCount.ToString();
+        profitNumObj.text = cities[city].offerResProfit;
+        profitObj.text = "Profit";
+
         deliveryStatusObj.text = cities[city].name;
         notEnoughtRes.SetActive(false);
     }
@@ -241,13 +249,16 @@ public class StrategyGame : MonoBehaviour
     private string cityRequsetName;
     void CreateRequest()
     {
-        if(Random.Range(0,100) <= 20 && offerRes == null && timeAfterLastOffer >= 2  && Time.time >= 7f)
+        cityID = Random.Range(0, cities.Length);
+        Debug.Log(cityID);
+        // Debug.Log(cities[cityID].offerResName == null);
+        int rnd = Random.Range(0,100);
+        if(rnd <= 20 && cities[cityID].offerResName == null && timeAfterLastOffer >= 1  && Time.time >= 1f)// && !text.instructionIsActive)
         {
             notificationObj.SetActive(true);
 
             offerID = Random.Range(0, Mathf.Clamp(playerLevel - 1, 0, 7));
             if(Random.Range(0,100) < 15) offerID = Mathf.Clamp(playerLevel, 1, 7);
-            cityID = Random.Range(0, cities.Length);
             offerRes = resoursesName[offerID];
             cityRequsetName = citiesNames[cityID];
             newOfferObj.text = $"New offer in {cities[cityID].name}!";
@@ -263,6 +274,10 @@ public class StrategyGame : MonoBehaviour
             profitObj.text = "Profit";
             profitNum = (profitScale[offerID] * offerCount - 10).ToString();
             profitNumObj.text = profitNum;
+
+            cities[cityID].offerResName = offerRes;
+            cities[cityID].offerResCount = offerCount;
+            cities[cityID].offerResProfit = profitNum;
         }
     }
 
@@ -280,6 +295,7 @@ public class StrategyGame : MonoBehaviour
     {
         deliveryActive = false;
         offerRes = null;
+        cities[cityID].offerResName = null;
         ClearUselessText();
         SendMenuUi.SetActive(false);
         notEnoughtRes.SetActive(false);
@@ -299,8 +315,8 @@ public class StrategyGame : MonoBehaviour
         progresLogo.sprite = ResoursesSprites[index];
 
         // Debug.Log($"{offerCount}\n {profitScale[index]}\n {profitScale[index] * offerCount}");
-        resoursesCount[index] -= offerCount;
-        resCountObj[index].text = resoursesCount[index].ToString();
+        cities[index].offerResCount -= offerCount;
+        resCountObj[index].text = cities[index].offerResCount.ToString();
 
         deliveryEnd = Convert.ToInt32(Time.time + deliveryDuration);
         deliveryStatusObj.text = "Delivery in progress";
@@ -311,18 +327,20 @@ public class StrategyGame : MonoBehaviour
         // profitNumObj.text = (profitScale[index] * offerCount - 10).ToString();
         // Debug.Log(profitScale[offerID] * offerCount - 10);
         
-        transportInfoObj.text = offerRes;
+        transportInfoObj.text = cities[index].offerResName;
         trInfoNumObj.text = offerCount.ToString();
         
 
         yield return new WaitForSeconds(deliveryDuration);
 
-        
+        Debug.Log($"spetim: {profitScale[index]}");
         septims += profitScale[index] * offerCount;
         septimsObj.text = septims.ToString();
         PlayerLevelProgress();
         timeAfterLastOffer = 0;
+        cities[cityID].offerResName = null;
         offerRes = null;
+        deliveryActive = false;
     }
 
     public float levelPoints = 0f;
@@ -354,12 +372,18 @@ public class StrategyGame : MonoBehaviour
         public string name {get;set;}
         public bool worldSide {get; set;}
         public int deliveryTime {get; set;}
+        public string offerResName {get; set;}
+        public int offerResCount {get; set;}
+        public string offerResProfit {get; set;}
 
-        public City(string Name, bool WorldSide, int delTime)
+        public City(string Name, bool WorldSide, int delTime, string resName, int resCount, string resProfit)
         {
             name = Name;
             worldSide = WorldSide;
             deliveryTime = delTime;
+            offerResName = resName;
+            offerResCount = resCount;
+            offerResProfit = resProfit;
         }
     }
     
@@ -377,7 +401,7 @@ public class StrategyGame : MonoBehaviour
         cities = new City[citiesNames.Length];
         
         for(int i = 0; i < citiesNames.Length; i++)
-            cities[i] = new City(citiesNames[i], i >= 4, 5);
+            cities[i] = new City(citiesNames[i], i >= 4, 5, null, -1, "0");
         cities[1].deliveryTime = 4;
         cities[2].deliveryTime = 7;
         cities[6].deliveryTime = 8;
@@ -455,8 +479,12 @@ public class StrategyGame : MonoBehaviour
 
     [Space][Header("fight elements")]
     public GameObject cityInfoObj;
+    // public VideoPlayer runInWhiteRun;
+
     public void WhInfoController()
     {
+        // StartCoroutine(RunToWhiteRun());
+
         cityInfoObj.SetActive(!cityInfoObj.activeSelf);
         if(cityInfoObj.activeSelf == true)
         {
@@ -466,6 +494,17 @@ public class StrategyGame : MonoBehaviour
             endBatlleTextObj.text = "";
         }
     }
+
+    /* public GameObject runInWhiteRunObj;
+    IEnumerator RunToWhiteRun()
+    {
+        runInWhiteRunObj.SetActive(true);
+        runInWhiteRun.Play();
+
+        yield return new WaitForSeconds((float)runInWhiteRun.length);
+        Destroy(runInWhiteRunObj);
+        runInWhiteRunObj.SetActive(false);
+    } */
 
     public float JarlPower;
     public void Fight(int JarlId)
@@ -554,7 +593,7 @@ public class StrategyGame : MonoBehaviour
 
     public void MoneyCheat()
     {
-        septims += 1000;
+        septims += Random.Range(300, 600);
         septimsObj.text = septims.ToString();
     }
 }

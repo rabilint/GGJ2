@@ -11,7 +11,7 @@ public class mapController : MonoBehaviour
     // public static var allCities = new Dictionary<string, int
     // public int pathToCities = {"0", "7", "15"}; 
     // public GameObject[] citiesButton;
-    public GameObject StartButton;
+    // public GameObject StartButton;
     public static int cityIndex;
 
     public static int money = 50;
@@ -26,7 +26,7 @@ public class mapController : MonoBehaviour
     {
         money = PlayerPrefs.GetInt("totalMoney");
 
-        StartButton.SetActive(false);
+        // StartButton.SetActive(false);
         // moneyDisplay.text = money.ToString();
         Debug.Log(money);
 
@@ -36,7 +36,7 @@ public class mapController : MonoBehaviour
     public void ChooseCityToJourney(int index)
     {
         Debug.Log("We go to " + index);
-        StartButton.SetActive(true);
+        // StartButton.SetActive(true);
         cityIndex = index;
 
         //activate other UI

@@ -654,9 +654,8 @@ MonoBehaviour:
   mainText:
   - After escaping execution due to the Dragon attack, you and Ralof went to Riverwood
   - His father invited you to stay at his house for the night
-  - In the morning it turned out that you had nowhere to go, so you decided to open
-    a small shop in this city
-  - Ralof found this idea interesting!
+  - In the morning you went to Whiterun
+  - Ralof found this idea interesting and decided to help you a little
   textObj: {fileID: 1052434384}
   delay: 0.015
   skyrimAwake: {fileID: 40182501}

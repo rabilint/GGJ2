@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class menuScript : MonoBehaviour
 {
     public GameObject creators;
+    public GameObject shpp;
 
     public void Play()
     {
@@ -15,6 +16,7 @@ public class menuScript : MonoBehaviour
     public void Creators()
     {
         creators.SetActive(!creators.activeSelf);
+        shpp.SetActive(!shpp.activeSelf);
     }
 
     public void QuitGame()
