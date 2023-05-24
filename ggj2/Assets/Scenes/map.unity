@@ -4681,7 +4681,6 @@ MonoBehaviour:
   - {fileID: 1428550245}
   - {fileID: 738936486}
   resoursesCount: 
-  deliveryDuration: 5
   deliveryStatusObj: {fileID: 588242632}
   trInfoNumObj: {fileID: 1941624844}
   transportInfoObj: {fileID: 1924620572}
@@ -4729,6 +4728,12 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 7b75be989f0cc2f46a87ba0127f3fc19, type: 3}
   - {fileID: 21300000, guid: fe545cb8ae61374468a2fac07910723a, type: 3}
   - {fileID: 21300000, guid: 809d68455a1238c459e82f37b9cd6f51, type: 3}
+  notifTextObj: {fileID: 121735679}
+  title_obj: {fileID: 588242632}
+  offerResName_obj: {fileID: 1924620572}
+  offerResCount_obj: {fileID: 1941624844}
+  offerResProfit_obj: {fileID: 462640127}
+  offerProfitObj: {fileID: 2028981131}
   notEnoughtRes: {fileID: 723140680}
   levelPoints: 0
   expToGetNewLvl: 2
@@ -7808,7 +7813,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 409454708}
         m_TargetAssemblyTypeName: StrategyGame, Assembly-CSharp
-        m_MethodName: SendResourses
+        m_MethodName: SendResourses_2
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -10017,7 +10022,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 14, y: 21.832031}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &1029577747

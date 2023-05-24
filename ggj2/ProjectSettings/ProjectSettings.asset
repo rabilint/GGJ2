@@ -52,7 +52,7 @@ PlayerSettings:
   m_MTRendering: 1
   mipStripping: 0
   numberOfMipsStripped: 0
-  m_StackTraceTypes: 000000000000000000000000000000000000000001000000
+  m_StackTraceTypes: 010000000100000001000000010000000100000001000000
   iosShowActivityIndicatorOnLoading: -1
   androidShowActivityIndicatorOnLoading: 2
   iosUseCustomAppBackgroundBehavior: 0
@@ -135,7 +135,7 @@ PlayerSettings:
     16:10: 0
     16:9: 1
     Others: 0
-  bundleVersion: 'Ludum Dare 53: beta'
+  bundleVersion: 'closed-beta: 1.4'
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0

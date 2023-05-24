@@ -23,8 +23,8 @@ public class StrategyGame : MonoBehaviour
 
     public int[] resoursesCount;
     [Space]
-    private int deliveryEnd;
-    public int deliveryDuration = 6;
+    // private int deliveryEnd;
+    // public int deliveryDuration = 6;
 
     public Text deliveryStatusObj;
 
@@ -56,6 +56,7 @@ public class StrategyGame : MonoBehaviour
     {
         startTime = new float[cost.Length];
         resoursesCount = new int[cost.Length];
+        delActive = new bool[cost.Length];
 
         JarlPower = Random.Range(48, 67);
         totalPowerObj.text = totalPower.ToString();
@@ -70,6 +71,7 @@ public class StrategyGame : MonoBehaviour
         for(int i = 0; i < cost.Length; i++)
         {
             startTime[i] = Time.time;
+            delActive[i] = false;
             costObj[i].text = cost[i].ToString();
         }
         notificationObj.SetActive(false);
@@ -107,20 +109,21 @@ public class StrategyGame : MonoBehaviour
     }
 
     private int timer = 0;
-    private int timeAfterLastOffer = 0;
     private void FixedUpdate()
     {
+
         if(Time.time >= timer)
         {
+            if(Random.Range(0,100) < 40)
+                CreateRequest(Random.Range(0, 8));
             timer++;
-            if(timer % 30 == 0) JarlPower++;
-            timeAfterLastOffer++;
-            CreateRequest();
         }
-        GetMoney();
+
+        // if(timer % 30 == 0) JarlPower++;
+        ResourceProduction();
     }
 
-    private void GetMoney()
+    private void ResourceProduction()
     {
         for(int i = 0; i < cost.Length; i++)
         {
@@ -140,34 +143,7 @@ public class StrategyGame : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if(deliveryActive)
-        {
-            deliveryDuration = cities[cityID].deliveryTime;
-            float progress = (deliveryEnd - Time.time) / deliveryDuration;
-            deliveryProgressBarObj.fillAmount = Mathf.Clamp01(progress);
-
-            remainingTimeObj.text = "Left time";
-            remTimeNumObj.text = (Math.Round(deliveryEnd - Time.time)).ToString();
-            
-                //end of delivery
-            if(progress <= 0) 
-            {
-                deliveryActive = false;
-                deliveryStatusObj.text = cities[cityID].name;
-                ClearUselessText();
-                /* if(!sendResButton.activeSelf)
-                {
-                    transportInfoObj.text = "";
-                    trInfoNumObj.text = "";
-                    Debug.Log("clear txt");
-                } */
-                icon.SetActive(false);
-                StartCoroutine(FIllPrBar());
-            }
-        }
-    }
+    
     void ClearUselessText()
     {
         profitNumObj.text = "";
@@ -192,7 +168,7 @@ public class StrategyGame : MonoBehaviour
     }
 
     public GameObject SendMenuElements;
-    public void ActivateSendMenu(int city)
+    /* public void ActivateSendMenu(int city)
     {
         // SendMenuUi.SetActive(true);
         cityID = city;
@@ -206,7 +182,7 @@ public class StrategyGame : MonoBehaviour
 
         deliveryStatusObj.text = cities[city].name;
         notEnoughtRes.SetActive(false);
-    }
+    } */
     public void CloseMenu()
     {
         SendMenuUi.SetActive(false);
@@ -216,7 +192,8 @@ public class StrategyGame : MonoBehaviour
     {
         notificationObj.SetActive(false);
         activateFromNotif = true;
-        ActivateSendMenu(cityID);
+        Debug.Log(G_indexOfChosenCity);
+        ActivateSendMenu(G_indexOfChosenCity);
     }
     public GameObject ResoursesMenuObj;
     public GameObject ResMenuContButton;
@@ -247,12 +224,13 @@ public class StrategyGame : MonoBehaviour
     private string profitNum;
     private int cityID = 2;
     private string cityRequsetName;
-    void CreateRequest()
+    /* void CreateRequest()
     {
         cityID = Random.Range(0, cities.Length);
-        Debug.Log(cityID);
+        // Debug.Log(cityID);
         // Debug.Log(cities[cityID].offerResName == null);
         int rnd = Random.Range(0,100);
+        Debug.Log(rnd);
         if(rnd <= 20 && cities[cityID].offerResName == null && timeAfterLastOffer >= 1  && Time.time >= 1f)// && !text.instructionIsActive)
         {
             notificationObj.SetActive(true);
@@ -279,7 +257,138 @@ public class StrategyGame : MonoBehaviour
             cities[cityID].offerResCount = offerCount;
             cities[cityID].offerResProfit = profitNum;
         }
+    } */
+
+    public class City
+    {
+        public string name{get; set;}
+        public bool haveOffer{get; set;}
+        public string offerResName{get; set;}
+        public int offerResCount{get; set;}
+        public int offerResProfit{get; set;}
+
+        public float deliveryDuration {get; set;}
+        public float deliveryEnd {get; set;}
+        public bool delIsActive {get; set;}
+
+        public City(string Name, string resName = "", int resCount = -1, int resProfit = -1, bool offerStatus = false, float delDur = 5f, float endDel = 0f, bool delStatus = false)
+        {
+            name = Name;
+            offerResName = resName;
+            offerResCount = resCount;
+            offerResProfit = resProfit;
+            haveOffer = offerStatus;
+
+            deliveryDuration = delDur;
+            deliveryEnd = endDel;
+            delIsActive = delStatus;
+        } 
     }
+
+    void PrBarFillAmount(int cityId)
+    {
+        float progress = Mathf.Clamp01((cities[cityId].deliveryEnd - Time.time) / cities[cityId].deliveryDuration);
+        deliveryProgressBarObj.fillAmount = progress;
+        remTimeNumObj.text = (Math.Round(cities[cityId].deliveryEnd - Time.time)).ToString();
+
+        if(progress == 1f) remainingTimeObj.text = "Left time";
+        if(progress == 1f) Debug.Log("Start Delivety"); //
+                    
+        if(progress <= 0) //end of delivery
+        {
+            Debug.Log("progress <= 0 /299");
+            G_indexOfChosenCity = -1;
+            delActive[cityId] = false;
+            deliveryStatusObj.text = cities[cityID].name;
+            ClearUselessText();
+            /* if(!sendResButton.activeSelf)
+            {
+                transportInfoObj.text = "";
+                trInfoNumObj.text = "";
+                Debug.Log("clear txt");
+            } */
+            icon.SetActive(false);
+            StartCoroutine(FIllPrBar());
+        }
+    }
+
+    void Update()
+    {
+        
+        // if(cities[??].haveOffer) FIllPrBar()
+        // if(G_indexOfChosenCity != -1) PrBarFillAmount(G_indexOfChosenCity);
+
+        for (int i = 0; i < cost.Length; i++)
+        {
+            if(delActive[i])
+                PrBarFillAmount(i);
+        }
+    }
+    
+    public Text notifTextObj;
+    void CreateRequest(int cityId)
+    {
+        if(!cities[cityId].haveOffer)
+        {
+            //write values
+            int res = Mathf.Clamp(Random.Range(0, playerLevel), 0, 6);
+            cities[cityId].offerResName = resoursesName[res];
+            cities[cityId].offerResCount = Random.Range(3, 31);
+            cities[cityId].offerResProfit = cities[cityId].offerResCount * profitScale[res];
+            cities[cityId].haveOffer = true;
+
+            //Call Notification
+            G_indexOfChosenCity = cityId;         
+            
+            notificationObj.SetActive(true);
+            notifTextObj.text = $"New offer in {citiesNames[cityId]}";
+        }
+    }
+
+    public void ActivateSendMenu(int cityId)
+    {
+        ChangePosition(cityId);
+        SendMenuUi.SetActive(false);
+        SendMenuUi.SetActive(true);
+
+        title_obj.text = citiesNames[cityId];
+
+        ChangeTextInSendMenuInfo(cityId);
+        //FIllPrBar();
+    }
+
+    [Header("Offer UI")]
+    public Text title_obj;
+    public Text offerResName_obj;
+    public Text offerResCount_obj;
+    public Text offerResProfit_obj;
+    public Text offerProfitObj;
+
+    void ChangeTextInSendMenuInfo(int cityId)
+    {
+        if(cities[cityId].haveOffer)
+        {
+                //change text in game
+            offerResName_obj.text = cities[cityId].offerResName;
+            offerResCount_obj.text = cities[cityId].offerResCount.ToString();
+            offerResProfit_obj.text = cities[cityId].offerResProfit.ToString();
+            offerProfitObj.text = "Profit";
+            title_obj.text = citiesNames[cityId];
+                G_indexOfChosenCity = cityId; //run progressbar filling in Update()
+        } else {
+            Debug.Log("_379");
+            G_indexOfChosenCity = -1;
+            deliveryProgressBarObj.fillAmount = 1f;
+        }
+    }
+    private int G_indexOfChosenCity = -1;
+    private bool[] delActive;
+    
+    public void SendResourses_2()
+    {
+        StartCoroutine(sssssss(G_indexOfChosenCity));
+    }
+
 
     public GameObject notEnoughtRes;
     public void SendResourses()
@@ -302,6 +411,52 @@ public class StrategyGame : MonoBehaviour
         notificationObj.SetActive(false);
     }
 
+    IEnumerator sssssss(int index)
+    {
+        // cityId = G_indexOfChosenCity;
+        Debug.Log($"{index} \n{resoursesCount[index]} \n{resoursesCount[index]} \n{!delActive[index]}");
+        if(resoursesCount[index] <= cities[index].offerResCount && !delActive[index])
+        {
+            // cities[cityId].delIsActive = true; //run progress bar filling in Update()
+            // resoursesCount[cityId] -= cities[cityId].offerResCount;
+            // //prBa filling
+            // yield return new WaitForSeconds(cities[cityId].deliveryDuration);
+            // Debug.Log("end of delivery");
+            // cities[cityId].delIsActive = true;
+            deliveryActive = true;
+            progresLogo.sprite = ResoursesSprites[2];
+            sendResButton.SetActive(false);
+            notEnoughtRes.SetActive(false);
+            notificationObj.SetActive(false);
+            refuseButton.SetActive(false);
+            icon.SetActive(true);
+
+
+            cities[index].offerResCount -= offerCount;
+            resCountObj[index].text = cities[index].offerResCount.ToString();
+
+            cities[index].deliveryEnd = Convert.ToInt32(Time.time + cities[index].deliveryDuration);
+            deliveryStatusObj.text = "Delivery in progress";
+
+            // profitObj.text = "Profit";
+            // profitNumObj.text = (profitScale[index] * offerCount - 10).ToString();
+            // Debug.Log(profitScale[offerID] * offerCount - 10);
+            
+            transportInfoObj.text = cities[index].offerResName;
+            trInfoNumObj.text = offerCount.ToString();
+            
+
+            septims -= 10; //снятие за повозку
+            septimsObj.text = septims.ToString();
+            yield return new WaitForSeconds(cities[index].deliveryDuration);
+
+            Debug.Log($"spetim: {profitScale[index]}");
+            septims += profitScale[index] * offerCount;
+            septimsObj.text = septims.ToString();
+            PlayerLevelProgress();
+        } else notEnoughtRes.SetActive(true);
+    }
+
     IEnumerator TransportResourses(int index)
     {
         deliveryActive = true;
@@ -315,10 +470,10 @@ public class StrategyGame : MonoBehaviour
         progresLogo.sprite = ResoursesSprites[index];
 
         // Debug.Log($"{offerCount}\n {profitScale[index]}\n {profitScale[index] * offerCount}");
-        cities[index].offerResCount -= offerCount;
+        cities[index].offerResCount -= cities[index].offerResCount;
         resCountObj[index].text = cities[index].offerResCount.ToString();
 
-        deliveryEnd = Convert.ToInt32(Time.time + deliveryDuration);
+        cities[index].deliveryEnd = Convert.ToInt32(Time.time + cities[index].deliveryDuration);
         deliveryStatusObj.text = "Delivery in progress";
         septims -= 10; //снятие за повозку
         septimsObj.text = septims.ToString();
@@ -331,16 +486,12 @@ public class StrategyGame : MonoBehaviour
         trInfoNumObj.text = offerCount.ToString();
         
 
-        yield return new WaitForSeconds(deliveryDuration);
+        yield return new WaitForSeconds(cities[index].deliveryDuration);
 
-        Debug.Log($"spetim: {profitScale[index]}");
-        septims += profitScale[index] * offerCount;
+        Debug.Log($"septim: {profitScale[index]}");
+        septims += profitScale[index] * cities[index].offerResCount;
         septimsObj.text = septims.ToString();
         PlayerLevelProgress();
-        timeAfterLastOffer = 0;
-        cities[cityID].offerResName = null;
-        offerRes = null;
-        deliveryActive = false;
     }
 
     public float levelPoints = 0f;
@@ -366,26 +517,6 @@ public class StrategyGame : MonoBehaviour
             levelProgresBar.fillAmount = levelPoints;
         }
     }
-
-    public class City
-    {
-        public string name {get;set;}
-        public bool worldSide {get; set;}
-        public int deliveryTime {get; set;}
-        public string offerResName {get; set;}
-        public int offerResCount {get; set;}
-        public string offerResProfit {get; set;}
-
-        public City(string Name, bool WorldSide, int delTime, string resName, int resCount, string resProfit)
-        {
-            name = Name;
-            worldSide = WorldSide;
-            deliveryTime = delTime;
-            offerResName = resName;
-            offerResCount = resCount;
-            offerResProfit = resProfit;
-        }
-    }
     
     public City[] cities;
     public Transform[] citiesInfoUiSpawnpointObj;
@@ -401,10 +532,10 @@ public class StrategyGame : MonoBehaviour
         cities = new City[citiesNames.Length];
         
         for(int i = 0; i < citiesNames.Length; i++)
-            cities[i] = new City(citiesNames[i], i >= 4, 5, null, -1, "0");
-        cities[1].deliveryTime = 4;
-        cities[2].deliveryTime = 7;
-        cities[6].deliveryTime = 8;
+            cities[i] = new City(citiesNames[i]);
+        cities[1].deliveryDuration = 4;
+        cities[2].deliveryDuration = 7;
+        cities[6].deliveryDuration = 8;
     }
 
 
@@ -417,9 +548,16 @@ public class StrategyGame : MonoBehaviour
             float posX = citiesInfoUiSpawnpointObj[index].position.x;
             float posY = citiesInfoUiSpawnpointObj[index].position.y;
 
-            SendMenuUi.SetActive(false);
             mainSendResMenu.transform.position = new Vector2(posX, posY);
-            SendMenuUi.SetActive(true);
+
+            /* if(SendMenuUi.activeSelf)
+            {
+                SendMenuUi.SetActive(false);
+                mainSendResMenu.transform.position = new Vector2(posX, posY);
+                SendMenuUi.SetActive(true);
+            } else 
+                mainSendResMenu.transform.position = new Vector2(posX, posY); */
+            
             activateFromNotif = false;
         }
     }
